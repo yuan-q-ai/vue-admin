@@ -5,6 +5,6 @@
 </template>
 
 <style lang="scss">
-#app {
-}
+//  #app {
+// }
 </style>
