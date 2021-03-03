@@ -3,8 +3,10 @@
   <div id="login">
     <!-- 这才是真正的内容区 -->
     <div class="login-wrap">
+      <!-- 菜单栏 -->
       <ul class="menu-tab">
         <!-- :key绑定属性 id唯一的 -->
+        <!-- toggleMneu切换菜单 -->
         <li
           v-for="item in menuTab"
           :key="item.id"
@@ -69,7 +71,7 @@
               ></el-input
             ></el-col>
             <el-col :span="9"
-              ><el-button type="success" class="block" @click="getSms()"
+              ><el-button type="success" class="block"
                 >获取验证码</el-button
               ></el-col
             >
@@ -89,19 +91,17 @@
   </div>
 </template>
 <script>
-import { GetSms } from "@/api/login";
-import { reactive, ref, onMounted } from "@vue/composition-api";
 import {
   stripscript,
   validateEmail,
   validatePass,
-  validateVCode
+  validateVCode,
 } from "@/utils/validate.js";
 export default {
   name: "login",
-  setup(props, { refs }) {
+  data() {
     //验证邮箱为用户名
-    let validateUsername = (rule, value, callback) => {
+    var validateUsername = (rule, value, callback) => {
       if (value === "") {
         callback(new Error("请输入用户名"));
       } else if (validateEmail(value)) {
@@ -111,10 +111,10 @@ export default {
       }
     };
     //验证密码
-    let validatePassword = (rule, value, callback) => {
+    var validatePassword = (rule, value, callback) => {
       //过滤后的数据
-      ruleForm.password = stripscript(value);
-      value = ruleForm.password;
+      this.ruleForm.password = stripscript(value);
+      value = this.ruleForm.password;
       if (value === "") {
         callback(new Error("请输入密码"));
       } else if (validatePass(value)) {
@@ -124,24 +124,24 @@ export default {
       }
     };
     //验证重复密码
-    let validatePasswords = (rule, value, callback) => {
+    var validatePasswords = (rule, value, callback) => {
       //如果模块值为login，直接通过
-      if (model.value === "login") {
+      if (this.model === "login") {
         callback();
       }
       //过滤后的数据
-      ruleForm.passwords = stripscript(value);
-      value = ruleForm.passwords;
+      this.ruleForm.passwords = stripscript(value);
+      value = this.ruleForm.passwords;
       if (value === "") {
         callback(new Error("请再次输入密码"));
-      } else if (value != ruleForm.password) {
+      } else if (value != this.ruleForm.password) {
         callback(new Error("重复密码不正确"));
       } else {
         callback();
       }
     };
     //验证验证码
-    let validateCode = (rule, value, callback) => {
+    var validateCode = (rule, value, callback) => {
       //过滤后的数据
       // this.ruleForm.code = stripscript(value);
       // value = this.ruleForm.code;
@@ -153,57 +153,46 @@ export default {
         callback();
       }
     };
-    //声明数据
-    //这里面放置data数据、生命周期、自定义的函数
-    const menuTab = reactive([
-      { txt: "登录", current: true, type: "login" },
-      { txt: "注册", current: false, type: "register" }
-    ]);
-
-    //模块值
-    const model = ref("login");
-    //表单绑定数据
-    const ruleForm = reactive({
-      username: "",
-      password: "",
-      passwords: "",
-      code: ""
-    });
-    //表单的验证
-    const rules = reactive({
-      username: [{ validator: validateUsername, trigger: "blur" }],
-      password: [{ validator: validatePassword, trigger: "blur" }],
-      passwords: [{ validator: validatePasswords, trigger: "blur" }],
-      code: [{ validator: validateCode, trigger: "blur" }]
-    });
-    //声明函数
-    const toggleMneu = data => {
-      menuTab.forEach(elem => {
+    return {
+      menuTab: [
+        { txt: "登录", current: true, type: "login" },
+        { txt: "注册", current: false, type: "register" },
+      ],
+      //模块值
+      model: "login",
+      //表单数据
+      ruleForm: {
+        username: "",
+        password: "",
+        passwords: "",
+        code: "",
+      },
+      rules: {
+        username: [{ validator: validateUsername, trigger: "blur" }],
+        password: [{ validator: validatePassword, trigger: "blur" }],
+        passwords: [{ validator: validatePasswords, trigger: "blur" }],
+        code: [{ validator: validateCode, trigger: "blur" }],
+      },
+    };
+  },
+  created() {},
+  //挂载完成后自动执行的
+  mounted() {},
+  //写函数的地方
+  methods: {
+    //vue 数据驱动视频渲染
+    //js 操作DOM元素
+    toggleMneu(data) {
+      this.menuTab.forEach((elem) => {
         elem.current = false;
       });
       //高光
       data.current = true;
       //修改模块值
-      model.value = data.type;
-    };
-    //获取验证码
-    const getSms = () => {
-      // let data = {
-      //   username: ruleForm.username
-      // };
-      // GetSms(data);
-      //一个参数可以这样写
-      GetSms({ username: ruleForm.username });
-    };
-    //提交表单
-    const submitForm = formName => {
-      // 为给定 ID 的 user 创建请求
-      // axios.get("/user?ID=12345").then(function (response) {
-      //     console.log(response);
-      //   }).catch(function (error) {
-      //     console.log(error);
-      //   });
-      refs[formName].validate(valid => {
+      this.model = data.type;
+    },
+    submitForm(formName) {
+      this.$refs[formName].validate((valid) => {
         if (valid) {
           alert("submit!");
         } else {
@@ -211,20 +200,8 @@ export default {
           return false;
         }
       });
-    };
-    // 生命周期
-    //挂载完成后
-    onMounted(() => {});
-    return {
-      menuTab,
-      model,
-      ruleForm,
-      rules,
-      toggleMneu,
-      submitForm,
-      getSms
-    };
-  }
+    },
+  },
 };
 </script>
 <style lang="scss" scoped>

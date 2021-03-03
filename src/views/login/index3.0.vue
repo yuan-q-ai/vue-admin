@@ -69,7 +69,7 @@
               ></el-input
             ></el-col>
             <el-col :span="9"
-              ><el-button type="success" class="block" @click="getSms()"
+              ><el-button type="success" class="block"
                 >获取验证码</el-button
               ></el-col
             >
@@ -89,14 +89,8 @@
   </div>
 </template>
 <script>
-import { GetSms } from "@/api/login";
 import { reactive, ref, onMounted } from "@vue/composition-api";
-import {
-  stripscript,
-  validateEmail,
-  validatePass,
-  validateVCode
-} from "@/utils/validate.js";
+import { stripscript, validateEmail, validatePass, validateVCode } from "@/utils/validate.js";
 export default {
   name: "login",
   setup(props, { refs }) {
@@ -186,23 +180,7 @@ export default {
       //修改模块值
       model.value = data.type;
     };
-    //获取验证码
-    const getSms = () => {
-      // let data = {
-      //   username: ruleForm.username
-      // };
-      // GetSms(data);
-      //一个参数可以这样写
-      GetSms({ username: ruleForm.username });
-    };
-    //提交表单
     const submitForm = formName => {
-      // 为给定 ID 的 user 创建请求
-      // axios.get("/user?ID=12345").then(function (response) {
-      //     console.log(response);
-      //   }).catch(function (error) {
-      //     console.log(error);
-      //   });
       refs[formName].validate(valid => {
         if (valid) {
           alert("submit!");
@@ -221,8 +199,7 @@ export default {
       ruleForm,
       rules,
       toggleMneu,
-      submitForm,
-      getSms
+      submitForm
     };
   }
 };
